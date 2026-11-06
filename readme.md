@@ -1,13 +1,30 @@
 ![Conventional Commits](https://img.shields.io/badge/Conventional_Commits-FE5196?style=flat&logo=conventionalcommits&logoColor=white)
 
-# agnostic-template
+# Foursquare Calendar Relay
 
-A language-agnostic template repo
+A project that runs a persistent Cloudflate worker that fetches Foursquare (Swarm) checkins as posts them as calendar events.
+ 
+Each checkin is written as a 30 minute event in the format _`I was at {place}_`, at checkin time.
+
+### Status
+
+WIP
 
 ### Setup
 
-Run `./scripts/setup.sh` once after cloning
+Fill in environment variables by copying `cp .env.example .env`
 
+### Development
+
+```sh
+bun run dev
+```
+
+Trigger cron handler manually:
+
+```sh
+curl "http://localhost:8787/__scheduled?cron=*/15+*+*+*+*"
+```
 
 ### Commit messages
 
