@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "foursquare-calendar-relay",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-01",
+  "triggers": {
+    "crons": ["*/15 * * * *"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "EVENT_MINUTES": 30
+  }
+}

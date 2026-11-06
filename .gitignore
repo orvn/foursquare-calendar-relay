@@ -220,6 +220,7 @@ dmypy.json
 
 # envs
 .env.*
+!.env.example
 .env
 .envrc
 .venv
@@ -251,6 +252,7 @@ storybook-static
 
 # other
 .serverless
+.wrangler/
 cypress/*
 playwright-report/
 playwright-trace/
