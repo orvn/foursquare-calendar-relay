@@ -1,0 +1,13 @@
+{
+  "name": "foursquare-calendar-relay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --test-scheduled",
+    "deploy": "wrangler deploy",
+    "secrets": "wrangler secret bulk .env"
+  },
+  "devDependencies": {
+    "wrangler": "^4.158.0"
+  }
+}
