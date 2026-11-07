@@ -22,7 +22,10 @@ export async function insertEvent(env, token, event) {
     headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
     body: JSON.stringify(event)
   })
-  if (res.ok || res.status === 409) return res.body?.cancel()
+  if (res.ok || res.status === 409) {
+    await res.body?.cancel()
+    return res.status === 409 ? 'exists' : 'added'
+  }
   const body = await res.json().catch(() => ({}))
   throw new Error(`google insert ${res.status}: ${body.error?.message ?? 'no json body'}`)
 }
