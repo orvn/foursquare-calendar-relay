@@ -6,7 +6,8 @@
     "dev": "wrangler dev --test-scheduled",
     "deploy": "wrangler deploy",
     "secrets": "wrangler secret bulk .env",
-    "auth:foursquare": "bun scripts/auth.js foursquare"
+    "auth:foursquare": "bun scripts/auth.js foursquare",
+    "auth:google": "bun scripts/auth.js google"
   },
   "devDependencies": {
     "wrangler": "^4.158.0"

@@ -27,6 +27,36 @@ const providers = {
       if (!body.access_token) throw new Error(`foursquare: ${JSON.stringify(body)}`)
       return body.access_token
     }
+  },
+  google: {
+    key: 'GOOGLE_REFRESH_TOKEN',
+    needs: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET'],
+    redirect: `http://localhost:${PORT}/google`,
+    authorize() {
+      return 'https://accounts.google.com/o/oauth2/v2/auth?' + new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        response_type: 'code',
+        redirect_uri: this.redirect,
+        scope: 'https://www.googleapis.com/auth/calendar.events',
+        access_type: 'offline',
+        prompt: 'consent'
+      })
+    },
+    async exchange(code) {
+      const res = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        body: new URLSearchParams({
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          grant_type: 'authorization_code',
+          redirect_uri: this.redirect,
+          code
+        })
+      })
+      const body = await res.json()
+      if (!body.refresh_token) throw new Error(`google: ${JSON.stringify(body)}`)
+      return body.refresh_token
+    }
   }
 }
 
@@ -66,4 +96,4 @@ const server = Bun.serve({
   }
 })
 
-console.log(`add ${provider.redirect} as a redirect uri on the app, then open:\n\n${provider.authorize()}\n`)
+console.log(`listening on ${provider.redirect}, open:\n\n${provider.authorize()}\n`)
