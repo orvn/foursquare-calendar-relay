@@ -1,13 +1,20 @@
 import { fetchCheckins } from './foursquare.js'
+import { accessToken, insertEvent } from './google.js'
 import { toEvent } from './event.js'
+
+async function sync(env, token, checkin) {
+  if (!checkin?.venue) return
+  const event = toEvent(checkin, env.EVENT_MINUTES)
+  if (env.DRY_RUN) return console.log(JSON.stringify(event))
+  await insertEvent(env, token, event)
+}
 
 export default {
   async scheduled(event, env, ctx) {
     // fixed one day window, replaced by the stored cursor later
     const after = Math.floor(Date.now() / 1000) - 86400
-    for (const checkin of await fetchCheckins(env, after)) {
-      if (checkin.venue) console.log(JSON.stringify(toEvent(checkin, env.EVENT_MINUTES)))
-    }
+    const [checkins, token] = await Promise.all([fetchCheckins(env, after), env.DRY_RUN ? null : accessToken(env)])
+    for (const checkin of checkins) await sync(env, token, checkin)
   },
 
   async fetch(request, env, ctx) {
