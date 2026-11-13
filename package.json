@@ -3,11 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "auth:foursquare": "bun scripts/auth.js foursquare",
+    "auth:google": "bun scripts/auth.js google",
     "dev": "wrangler dev --test-scheduled",
     "deploy": "wrangler deploy",
-    "secrets": "wrangler secret bulk .env",
-    "auth:foursquare": "bun scripts/auth.js foursquare",
-    "auth:google": "bun scripts/auth.js google"
+    "secrets": "wrangler secret bulk .env"
   },
   "devDependencies": {
     "wrangler": "^4.158.0"

@@ -30,6 +30,23 @@ async function poll(env) {
   }
 }
 
+// foursquare posts each checkin as a form, push never moves the cursor so the poll backstops it
+async function push(request, env, ctx) {
+  if (!env.FOURSQUARE_PUSH_SECRET) return new Response('not found', { status: 404 })
+  const form = await request.formData().catch(() => null)
+  if (form?.get('secret') !== env.FOURSQUARE_PUSH_SECRET) return new Response('forbidden', { status: 403 })
+
+  let checkin = null
+  try { checkin = JSON.parse(form.get('checkin')) } catch {}
+  if (checkin?.venue) ctx.waitUntil(relay(env, checkin))
+  return new Response('ok')
+}
+
+async function relay(env, checkin) {
+  const token = env.DRY_RUN ? null : await accessToken(env)
+  await sync(env, token, checkin)
+}
+
 async function heartbeat(env) {
   if (!env.HEARTBEAT_URL || env.DRY_RUN) return
   const res = await fetch(env.HEARTBEAT_URL)
@@ -43,6 +60,8 @@ export default {
   },
 
   async fetch(request, env, ctx) {
+    const { pathname } = new URL(request.url)
+    if (request.method === 'POST' && pathname === '/push') return push(request, env, ctx)
     return new Response('not found', { status: 404 })
   }
 }
