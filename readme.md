@@ -23,6 +23,7 @@ Each checkin is written as a 30 minute event titled _`I was at {place}`_ startin
 - The calendar event ID used is copied from the Foursquare checkin ID
 - The position (epoch of the last synced checkin) is stored in Cloudflare KV
 - Optional additional feature: after an update the service can call an uptime monitoring URL (the service used is Uptime Robot)
+- Optional additional feature: Foursquare can push each checkin to `/push` as it happens, the cron still catches anything a push misses
 
 
 ## Setup
@@ -114,6 +115,15 @@ The Worker starts syncing from the moment of its first run.
 Older checkins can be backfilled by set the starting point to an epoch timestamp in seconds `bunx wrangler kv key put cursor 1700000000 --binding STATE --remote`
 
 Watch it live with `bunx wrangler tail`
+
+#### 7. Push (optional)
+
+The cron can lag a checkin by up to 15 minutes. Foursquare can also POST each checkin to the Worker the moment it happens:
+
+1. In the Foursquare app settings, set the Push URL to `https://<your worker>.workers.dev/push`
+2. Copy the Push Secret into `.env` as `FOURSQUARE_PUSH_SECRET`, then `bun run secrets`
+
+Push never moves the starting point, so the cron still backstops every checkin. Leave the secret empty and `/push` answers 404.
 
 ### Adjust Features
 
